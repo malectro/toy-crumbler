@@ -7,7 +7,6 @@ export function init({camera, scene}) {
 
   window.addEventListener('wheel', event => {
     event.preventDefault();
-    return;
 
     dir = camera.getWorldDirection(dir);
     sideDir.set(dir.z, 0, dir.x);
@@ -22,12 +21,12 @@ export function init({camera, scene}) {
       //camera.rotation.x -= event.deltaY * 0.01;
       camera.rotation.y += event.deltaX * 0.01;
     } else {
+      /*
       scene.rotation.x += event.deltaY * 0.01;
       scene.rotation.y += event.deltaX * 0.01;
-      /*
-      scene.position.addScaledVector(dir, event.deltaY);
-      scene.position.addScaledVector(sideDir, event.deltaX);
       */
+      scene.position.addScaledVector(dir, event.deltaY);
+      //scene.position.addScaledVector(sideDir, event.deltaX);
       /*
       terrainMesh.position.x += event.deltaX * 0.1;
       terrainMesh.position.y += event.deltaY * 0.1;
