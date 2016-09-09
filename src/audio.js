@@ -29,7 +29,34 @@ export const oscGain = context.createGain();
 oscGain.gain.value = 0;
 
 osc.connect(oscGain);
-delay.receive(oscGain);
+
+const envToFrequency = context.createGain();
+envToFrequency.gain.value = 100000;
+oscGain.connect(envToFrequency);
+
+const highPass = context.createBiquadFilter();
+highPass.frequency.value = 0;
+highPass.type = 'highpass';
+highPass.Q.value = 700;
+oscGain.connect(highPass);
+
+const highPassMod = context.createGain();
+highPassMod.gain.value = 0.01;
+envToFrequency.connect(highPassMod);
+highPassMod.connect(highPass.frequency);
+
+export const lowPass = context.createBiquadFilter();
+lowPass.frequency.value = 0;
+lowPass.type = 'lowpass';
+lowPass.Q.value = 500;
+highPass.connect(lowPass);
+
+export const lowPassMod = context.createGain();
+lowPassMod.gain.value = 1;
+envToFrequency.connect(lowPassMod);
+lowPassMod.connect(lowPass.frequency);
+
+delay.receive(lowPass);
 
 const attack = 0.01;
 const decay = 0.2;
@@ -42,10 +69,10 @@ export function down(velocity = 1) {
   gain.cancelScheduledValues(currentTime);
 
   let time = currentTime + attack;
-  gain.linearRampToValueAtTime(1, time);
+  gain.exponentialRampToValueAtTime(1, time);
 
   time = time + decay;
-  gain.linearRampToValueAtTime(sustain, time);
+  gain.exponentialRampToValueAtTime(sustain, time);
 
   return time;
 }

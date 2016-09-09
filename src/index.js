@@ -5,7 +5,7 @@ import {Scene, Geometry, PointsMaterial, LineBasicMaterial, AmbientLight, Direct
 import {topScene, camera, renderer, onUpdate} from 'src/renderer';
 import * as controls from 'src/controls';
 import {vec2, vec3} from 'src/vector';
-import {play, down, up, oscGain} from 'src/audio';
+import {play, down, up, oscGain, lowPass, lowPassMod} from 'src/audio';
 
 
 const fogColor = 0x000000;
@@ -91,6 +91,7 @@ onUpdate(time => {
       rumbleFactor = rumbleFactor * rumbleDecay;
     }
   }
+  //console.log(lowPassMod.gain.value, lowPass.frequency.value);
 });
 
 /*

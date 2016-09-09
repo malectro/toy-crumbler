@@ -7,6 +7,7 @@ export function init({camera, scene}) {
 
   window.addEventListener('wheel', event => {
     event.preventDefault();
+    return;
 
     dir = camera.getWorldDirection(dir);
     sideDir.set(dir.z, 0, dir.x);
@@ -33,5 +34,59 @@ export function init({camera, scene}) {
       */
     }
   });
+
+
+  let mouseStart;
+  function handleMouseDown(event) {
+    event.preventDefault();
+    mouseStart = event;
+  }
+
+  function handleMouseMove(event) {
+    event.preventDefault();
+    if (mouseStart) {
+      rotate(mouseStart, event);
+    }
+  }
+
+  function handleMouseUp(event) {
+    event.preventDefault();
+    mouseStart = null;
+  }
+  window.addEventListener('mousedown', handleMouseDown);
+  window.addEventListener('mousemove', handleMouseMove);
+  window.addEventListener('mouseup', handleMouseUp);
+
+
+  const touches = {};
+  let touchCount = 0;
+  function handleTouchStart(event) {
+    event.preventDefault();
+    const touch = event.changedTouches[0];
+    touches[touch.identifier] = touch;
+    touchCount++;
+  }
+
+  function handleTouchMove(event) {
+    event.preventDefault();
+    if (touchCount === 1) {
+      const touch = event.changedTouches[0];
+      rotate(touches[touch.identifier], touch);
+    }
+  }
+
+  function handleTouchEnd(event) {
+    event.preventDefault();
+    delete touches[event.changedTouches[0].identifier];
+  }
+  window.addEventListener('touchstart', handleTouchStart);
+  window.addEventListener('touchmove', handleTouchMove);
+  window.addEventListener('touchend', handleTouchEnd);
+
+
+  function rotate(start, current) {
+    scene.rotation.y = (current.pageX - start.pageX) * 0.01;
+    scene.rotation.x = (current.pageY - start.pageY) * 0.01;
+  }
 }
 
