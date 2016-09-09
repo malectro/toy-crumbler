@@ -37,11 +37,12 @@ oscGain.connect(envToFrequency);
 const highPass = context.createBiquadFilter();
 highPass.frequency.value = 0;
 highPass.type = 'highpass';
+highPass.gain.value = 0.2;
 highPass.Q.value = 700;
 oscGain.connect(highPass);
 
 const highPassMod = context.createGain();
-highPassMod.gain.value = 0.01;
+highPassMod.gain.value = 0.001;
 envToFrequency.connect(highPassMod);
 highPassMod.connect(highPass.frequency);
 
@@ -59,7 +60,7 @@ lowPassMod.connect(lowPass.frequency);
 delay.receive(lowPass);
 
 const attack = 0.01;
-const decay = 0.2;
+const decay = 0.1;
 const sustain = 0.6;
 const release = 0.5;
 export function down(velocity = 1) {
