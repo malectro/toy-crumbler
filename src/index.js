@@ -5,7 +5,7 @@ import {Scene, Geometry, PointsMaterial, LineBasicMaterial, AmbientLight, Direct
 import {topScene, camera, renderer, onUpdate} from 'src/renderer';
 import * as controls from 'src/controls';
 import {vec2, vec3} from 'src/vector';
-import {load as loadAtlas} from 'src/atlas-texture';
+import {play} from 'src/audio';
 
 
 const fogColor = 0x000000;
@@ -91,6 +91,7 @@ onUpdate(time => {
 
 window.addEventListener('click', () => {
   rumbleFactor = 1;
+  play();
 });
 
 window.camera = camera;
