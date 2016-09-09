@@ -21,8 +21,12 @@ export function init({camera, scene}) {
       //camera.rotation.x -= event.deltaY * 0.01;
       camera.rotation.y += event.deltaX * 0.01;
     } else {
+      scene.rotation.x += event.deltaY * 0.01;
+      scene.rotation.y += event.deltaX * 0.01;
+      /*
       scene.position.addScaledVector(dir, event.deltaY);
       scene.position.addScaledVector(sideDir, event.deltaX);
+      */
       /*
       terrainMesh.position.x += event.deltaX * 0.1;
       terrainMesh.position.y += event.deltaY * 0.1;

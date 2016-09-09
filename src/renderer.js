@@ -1,3 +1,4 @@
+import noop from 'lodash/noop';
 import {Scene, PerspectiveCamera, WebGLRenderer} from 'three';
 import {vec2, vec3} from 'src/vector';
 
@@ -15,11 +16,16 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 
 document.body.appendChild(renderer.domElement);
 
-function render() {
+let update = noop;
+export function onUpdate(handler) {
+  update = handler;
+}
+function render(time) {
   requestAnimationFrame(render);
+  update(time);
   renderer.render(topScene, camera);
 }
-render();
+requestAnimationFrame(render);
 
 camera.position.set(0, 0, 0);
 camera.lookAt(vec3(0, 0, 1));
