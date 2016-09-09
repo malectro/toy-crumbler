@@ -14,7 +14,7 @@ masterGain.gain.value = 0.5;
 
 export const delay = createDelay(context);
 delay.connect(masterGain);
-delay.delayTime.value = 0.5;
+delay.delayTime.value = 0.2;
 delay.blend.value = 0.4;
 delay.feedback.value = 0.5;
 
@@ -25,7 +25,7 @@ osc.type = 'sawtooth';
 osc.frequency.value = notes[8];
 osc.start(context.currentTime);
 
-const oscGain = context.createGain();
+export const oscGain = context.createGain();
 oscGain.gain.value = 0;
 
 osc.connect(oscGain);
@@ -35,7 +35,7 @@ const attack = 0.01;
 const decay = 0.2;
 const sustain = 0.6;
 const release = 0.5;
-export function play() {
+export function down(velocity = 1) {
   const {currentTime} = context;
   const {gain} = oscGain;
 
@@ -47,7 +47,25 @@ export function play() {
   time = time + decay;
   gain.linearRampToValueAtTime(sustain, time);
 
+  return time;
+}
+
+export function up(startTime) {
+  const {gain} = oscGain;
+  let time = startTime || context.currentTime;
+
+  if (!startTime) {
+    gain.cancelScheduledValues(time);
+  }
+
   time = time + release;
   gain.linearRampToValueAtTime(0, time);
+
+  return time;
+}
+
+export function play() {
+  let time = down();
+  up(time);
 };
 

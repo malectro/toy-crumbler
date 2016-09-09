@@ -5,7 +5,7 @@ import {Scene, Geometry, PointsMaterial, LineBasicMaterial, AmbientLight, Direct
 import {topScene, camera, renderer, onUpdate} from 'src/renderer';
 import * as controls from 'src/controls';
 import {vec2, vec3} from 'src/vector';
-import {play} from 'src/audio';
+import {play, down, up, oscGain} from 'src/audio';
 
 
 const fogColor = 0x000000;
@@ -38,6 +38,7 @@ for (let i = 0; i < vertices; i++) {
   pointsGeometryStatic.vertices.push(vec3(randomPoint(), randomPoint(), randomPoint()));
 }
 const pointsGeometry = pointsGeometryStatic.clone();
+pointsGeometry.vertices.forEach(vertex => vertex.multiplyScalar(0.001));
 
 const pointsMaterial = new PointsMaterial({
   color: 0xffffff,
@@ -64,19 +65,22 @@ const rumbleDecay = 0.9;
 const minRumble = 0.001;
 let rumbleFactor = 0;
 
+const zeroVertex = vec3(0, 0, 0);
+
 onUpdate(time => {
   const staticVertices = pointsGeometryStatic.vertices;
   const {vertices} = pointsGeometry;
 
-  if (rumbleFactor > 0) {
+  rumbleFactor = oscGain.gain.value;
 
+  if (rumbleFactor > 0) {
     let vertex, staticVertex;
     for (let i = 0; i < vertices.length; i++) {
       vertex = vertices[i];
       staticVertex = staticVertices[i];
 
-      vertex.copy(staticVertex);
-      vertex.addScaledVector(vertex, Math.random() * shake * rumbleFactor);
+      vertex.copy(zeroVertex);
+      vertex.addScaledVector(staticVertex, Math.random() * rumbleFactor);
     }
 
     pointsGeometry.verticesNeedUpdate = true;
@@ -89,10 +93,14 @@ onUpdate(time => {
   }
 });
 
+/*
 window.addEventListener('click', () => {
-  rumbleFactor = 1;
   play();
 });
+*/
+
+window.addEventListener('mousedown', () => down());
+window.addEventListener('mouseup', () => up());
 
 window.camera = camera;
 window.scene = pointScene;
