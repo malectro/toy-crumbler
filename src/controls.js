@@ -68,6 +68,7 @@ export function init({camera, scene}) {
     touches[touch.identifier] = touch;
     touchCount++;
     if (touchCount === 1) {
+      console.log('start', touchCount);
       down();
     }
   }
@@ -75,6 +76,7 @@ export function init({camera, scene}) {
   function handleTouchMove(event) {
     event.preventDefault();
     if (touchCount === 1) {
+      console.log('move', touchCount);
       const touch = event.changedTouches[0];
       rotate(touches[touch.identifier], touch);
     }
@@ -85,6 +87,7 @@ export function init({camera, scene}) {
     delete touches[event.changedTouches[0].identifier];
     touchCount--;
     if (touchCount === 0) {
+      console.log('end', touchCount);
       up();
     }
   }

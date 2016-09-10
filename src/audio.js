@@ -5,6 +5,7 @@ import {createDelay} from 'src/audio/delay';
 const notes = times(88).map(note => Math.pow(2, (note - 49) / 12) * 440);
 
 
+const AudioContext = window.AudioContext || window.webkitAudioContext;
 export const context = new AudioContext();
 
 // postfx
@@ -20,15 +21,8 @@ delay.feedback.value = 0.5;
 
 
 // osc
-const osc = context.createOscillator();
-osc.type = 'sawtooth';
-osc.frequency.value = notes[8];
-osc.start(context.currentTime);
-
 export const oscGain = context.createGain();
 oscGain.gain.value = 0;
-
-osc.connect(oscGain);
 
 const envToFrequency = context.createGain();
 envToFrequency.gain.value = 100000;
@@ -66,6 +60,12 @@ const release = 0.5;
 export function down(velocity = 1) {
   const {currentTime} = context;
   const {gain} = oscGain;
+
+  const osc = context.createOscillator();
+  osc.type = 'sawtooth';
+  osc.frequency.value = notes[8];
+  osc.start(currentTime);
+  osc.connect(oscGain);
 
   gain.cancelScheduledValues(currentTime);
 
