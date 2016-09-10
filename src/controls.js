@@ -1,4 +1,5 @@
 import {vec3} from 'src/vector';
+import {up, down} from 'src/audio';
 
 
 export function init({camera, scene}) {
@@ -39,6 +40,7 @@ export function init({camera, scene}) {
   function handleMouseDown(event) {
     event.preventDefault();
     mouseStart = event;
+    down();
   }
 
   function handleMouseMove(event) {
@@ -51,6 +53,7 @@ export function init({camera, scene}) {
   function handleMouseUp(event) {
     event.preventDefault();
     mouseStart = null;
+    up();
   }
   window.addEventListener('mousedown', handleMouseDown);
   window.addEventListener('mousemove', handleMouseMove);
@@ -64,6 +67,9 @@ export function init({camera, scene}) {
     const touch = event.changedTouches[0];
     touches[touch.identifier] = touch;
     touchCount++;
+    if (touchCount === 1) {
+      down();
+    }
   }
 
   function handleTouchMove(event) {
@@ -77,6 +83,10 @@ export function init({camera, scene}) {
   function handleTouchEnd(event) {
     event.preventDefault();
     delete touches[event.changedTouches[0].identifier];
+    touchCount--;
+    if (touchCount === 0) {
+      up();
+    }
   }
   window.addEventListener('touchstart', handleTouchStart);
   window.addEventListener('touchmove', handleTouchMove);

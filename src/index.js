@@ -5,7 +5,7 @@ import {Scene, Geometry, PointsMaterial, LineBasicMaterial, AmbientLight, Direct
 import {topScene, camera, renderer, onUpdate} from 'src/renderer';
 import * as controls from 'src/controls';
 import {vec2, vec3} from 'src/vector';
-import {play, down, up, oscGain, lowPass, lowPassMod} from 'src/audio';
+import {play, oscGain, lowPass, lowPassMod} from 'src/audio';
 
 
 const fogColor = 0x000000;
@@ -99,9 +99,6 @@ window.addEventListener('click', () => {
   play();
 });
 */
-
-window.addEventListener('mousedown', () => down());
-window.addEventListener('mouseup', () => up());
 
 window.camera = camera;
 window.scene = pointScene;
