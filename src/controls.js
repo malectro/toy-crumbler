@@ -98,7 +98,6 @@ export function init({camera, scene}) {
   function rotate(start, current) {
     scene.rotation.y = (current.pageX - start.pageX) * 0.01;
     scene.rotation.x = (current.pageY - start.pageY) * 0.01;
-    console.log('rotate', start, current, scene.rotation.y, scene.rotation.x);
   }
 }
 
