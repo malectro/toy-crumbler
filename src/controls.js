@@ -65,7 +65,10 @@ export function init({camera, scene}) {
   function handleTouchStart(event) {
     event.preventDefault();
     const touch = event.changedTouches[0];
-    touches[touch.identifier] = touch;
+    touches[touch.identifier] = {
+      pageX: touch.pageX,
+      pageY: touch.pageY,
+    };
     touchCount++;
     console.log('start', touchCount);
     console.log('hi', touch.force, touch.identifier);
@@ -95,6 +98,7 @@ export function init({camera, scene}) {
   function rotate(start, current) {
     scene.rotation.y = (current.pageX - start.pageX) * 0.01;
     scene.rotation.x = (current.pageY - start.pageY) * 0.01;
+    console.log('rotate', start, current, scene.rotation.y, scene.rotation.x);
   }
 }
 

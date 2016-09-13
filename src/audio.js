@@ -61,7 +61,7 @@ const release = 0.5;
 const loudRange = 1 - sustain;
 
 let oscs = {};
-export function down(velocity = 1, id = 0) {
+export function down(velocity = 0, id = 0) {
   const {currentTime} = context;
   const {gain} = oscGain;
 
@@ -84,7 +84,7 @@ export function down(velocity = 1, id = 0) {
   return time;
 }
 
-export function push(velocity = 1, id = 0) {
+export function push(velocity = 0, id = 0) {
   const {currentTime} = context;
   const {gain} = oscGain;
   const osc = oscs[id];
