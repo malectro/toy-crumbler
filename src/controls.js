@@ -1,5 +1,5 @@
 import {vec3} from 'src/vector';
-import {up, down} from 'src/audio';
+import {up, push, down} from 'src/audio';
 
 
 export function init({camera, scene}) {
@@ -67,29 +67,25 @@ export function init({camera, scene}) {
     const touch = event.changedTouches[0];
     touches[touch.identifier] = touch;
     touchCount++;
-    if (touchCount === 1) {
-      console.log('start', touchCount);
-      down();
-    }
+    console.log('start', touchCount);
+    console.log('hi', touch.force, touch.identifier);
+    down(touch.force, touch.identifier);
   }
 
   function handleTouchMove(event) {
     event.preventDefault();
-    if (touchCount === 1) {
-      console.log('move', touchCount);
-      const touch = event.changedTouches[0];
-      rotate(touches[touch.identifier], touch);
-    }
+    const touch = event.changedTouches[0];
+    rotate(touches[touch.identifier], touch);
+    push(touch.force, touch.identifier);
+    console.log('move', touch.force, touch.identifier);
   }
 
   function handleTouchEnd(event) {
     event.preventDefault();
-    delete touches[event.changedTouches[0].identifier];
+    const touch = event.changedTouches[0];
+    delete touches[touch.identifier];
     touchCount--;
-    if (touchCount === 0) {
-      console.log('end', touchCount);
-      up();
-    }
+    up(null, touch.identifier);
   }
   window.addEventListener('touchstart', handleTouchStart);
   window.addEventListener('touchmove', handleTouchMove);

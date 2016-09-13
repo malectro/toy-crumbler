@@ -57,7 +57,11 @@ const attack = 0.01;
 const decay = 0.1;
 const sustain = 0.6;
 const release = 0.5;
-export function down(velocity = 1) {
+
+const loudRange = 1 - sustain;
+
+let oscs = {};
+export function down(velocity = 1, id = 0) {
   const {currentTime} = context;
   const {gain} = oscGain;
 
@@ -67,19 +71,31 @@ export function down(velocity = 1) {
   osc.start(currentTime);
   osc.connect(oscGain);
 
+  oscs[id] = osc;
+
   gain.cancelScheduledValues(currentTime);
 
   let time = currentTime + attack;
   gain.exponentialRampToValueAtTime(1, time);
 
   time = time + decay;
-  gain.exponentialRampToValueAtTime(sustain, time);
+  gain.exponentialRampToValueAtTime(sustain + velocity * loudRange, time);
 
   return time;
 }
 
-export function up(startTime) {
+export function push(velocity = 1, id = 0) {
+  const {currentTime} = context;
   const {gain} = oscGain;
+  const osc = oscs[id];
+
+  gain.cancelScheduledValues(currentTime);
+  gain.exponentialRampToValueAtTime(sustain + velocity * loudRange, currentTime + 0.01);
+}
+
+export function up(startTime, id = 0) {
+  const {gain} = oscGain;
+  const osc = oscs[id];
   let time = startTime || context.currentTime;
 
   if (!startTime) {
@@ -88,6 +104,9 @@ export function up(startTime) {
 
   time = time + release;
   gain.linearRampToValueAtTime(0, time);
+
+  osc.stop(time);
+  delete oscs[id];
 
   return time;
 }
