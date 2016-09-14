@@ -1,5 +1,5 @@
 import {vec3} from 'src/vector';
-import {up, push, down} from 'src/audio';
+import {attackCrumble, changeCrumble, releaseCrumble} from 'src/crumble';
 
 
 export function init({camera, scene}) {
@@ -40,12 +40,13 @@ export function init({camera, scene}) {
   function handleMouseDown(event) {
     event.preventDefault();
     mouseStart = event;
-    down();
+    attackCrumble(event);
   }
 
   function handleMouseMove(event) {
     event.preventDefault();
     if (mouseStart) {
+      changeCrumble(event);
       rotate(mouseStart, event);
     }
   }
@@ -53,7 +54,7 @@ export function init({camera, scene}) {
   function handleMouseUp(event) {
     event.preventDefault();
     mouseStart = null;
-    up();
+    releaseCrumble(event);
   }
   window.addEventListener('mousedown', handleMouseDown);
   window.addEventListener('mousemove', handleMouseMove);
@@ -72,14 +73,15 @@ export function init({camera, scene}) {
     touchCount++;
     console.log('start', touchCount);
     console.log('hi', touch.force, touch.identifier);
-    down(touch.force, touch.identifier);
+
+    attackCrumble(touch);
   }
 
   function handleTouchMove(event) {
     event.preventDefault();
     const touch = event.changedTouches[0];
+    changeCrumble(touch);
     rotate(touches[touch.identifier], touch);
-    push(touch.force, touch.identifier);
     console.log('move', touch.force, touch.identifier);
   }
 
@@ -88,7 +90,7 @@ export function init({camera, scene}) {
     const touch = event.changedTouches[0];
     delete touches[touch.identifier];
     touchCount--;
-    up(null, touch.identifier);
+    releaseCrumble(touch);
   }
   window.addEventListener('touchstart', handleTouchStart);
   window.addEventListener('touchmove', handleTouchMove);

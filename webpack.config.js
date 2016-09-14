@@ -12,6 +12,7 @@ module.exports = {
   resolve: {
     root: __dirname,
   },
+  devtool: 'source-map',
   module: {
     loaders: [
       {
