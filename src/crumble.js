@@ -1,4 +1,4 @@
-import {onUpdate} from 'src/renderer';
+import {onUpdate, camera} from 'src/renderer';
 import {createLine, removeLine, pointsGeometryStatic} from 'src/points';
 import {delay, context as audioContext} from 'src/audio';
 import * as monosynth from 'src/audio/monosynth';
@@ -6,6 +6,12 @@ import {vec2, vec3} from 'src/vector';
 
 
 const crumbles = new Map();
+
+
+const halfWidth = window.innerWidth / 2;
+const halfHeight = window.innerHeight / 2;
+const worldHeight = Math.sin((camera.fov / 2) * Math.PI / 180) * 1000 * 2;
+const screenToWorld = worldHeight / innerHeight;
 
 export function createCrumble(touch) {
   const id = touch.identifier || 1;
@@ -16,6 +22,7 @@ export function createCrumble(touch) {
   };
   crumbles.set(id, crumble);
 
+  crumble.line.object.position.set(screenToWorld * (touch.pageX - halfWidth), screenToWorld * (touch.pageY - halfHeight), 0);
   delay.receive(crumble.synth);
 
   return crumble;

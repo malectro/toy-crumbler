@@ -13,6 +13,7 @@ export const renderer = new WebGLRenderer({
 });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
+//export const rayPlane = new Plane();
 
 document.body.appendChild(renderer.domElement);
 
