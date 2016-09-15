@@ -1,12 +1,17 @@
 import {onUpdate, camera} from 'src/renderer';
 import {createLine, removeLine, pointsGeometryStatic} from 'src/points';
-import {delay, context as audioContext} from 'src/audio';
+import {delay, context as audioContext, notes} from 'src/audio';
 import * as monosynth from 'src/audio/monosynth';
 import {vec2, vec3} from 'src/vector';
 
 
 const crumbles = new Map();
 
+
+
+const freqFloor = notes[0];
+const freqCeiling = notes[30];
+const freqScale = Math.log2(notes[30] - notes[0] + 1);
 
 const halfWidth = window.innerWidth / 2;
 const halfHeight = window.innerHeight / 2;
@@ -15,10 +20,14 @@ const screenToWorld = worldHeight / innerHeight;
 
 export function createCrumble(touch) {
   const id = touch.identifier || 1;
+  const frequency = Math.pow(2, (touch.pageY / window.innerHeight) * freqScale) + notes[0] - 1;
+
   const crumble = {
     touch,
     line: createLine(),
-    synth: monosynth.create(audioContext),
+    synth: monosynth.create(audioContext, {
+      frequency,
+    }),
   };
   crumbles.set(id, crumble);
 

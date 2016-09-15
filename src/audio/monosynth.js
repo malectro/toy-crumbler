@@ -12,6 +12,7 @@ const notes = times(88).map(note => Math.pow(2, (note - 49) / 12) * 440);
 
 const defaultOptions = {
   destination: null,
+  frequency: notes[8],
 };
 
 export function create(context, options = defaultOptions) {
@@ -19,7 +20,7 @@ export function create(context, options = defaultOptions) {
 
   const osc = context.createOscillator();
   osc.type = 'sawtooth';
-  osc.frequency.value = notes[8];
+  osc.frequency.value = options.frequency;
   osc.start(currentTime);
 
   const gain = context.createGain();
