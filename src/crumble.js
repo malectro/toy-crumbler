@@ -11,7 +11,8 @@ import {exp} from 'src/scale';
 const freqFloor = notes[2];
 const freqCeiling = notes[30];
 const yToFreq = exp(2, [freqFloor, freqCeiling]);
-const xToFreq = exp(2, [notes[6], notes[87]]);
+const xToFreq = exp(2, [notes[12], notes[87]]);
+const PI2 = Math.PI * 2;
 
 const halfWidth = window.innerWidth / 2;
 const halfHeight = window.innerHeight / 2;
@@ -27,7 +28,10 @@ export function createCrumble(touch) {
   const lowPass = xToFreq(touch.pageX / window.innerWidth);
 
   const crumble = {
-    touch,
+    touch: {
+      pageX: touch.pageX,
+      pageY: touch.pageY,
+    },
     line: createLine(),
     synth: monosynth.create(audioContext, {
       frequency,
@@ -57,13 +61,20 @@ export function attackCrumble(touch) {
 export function changeCrumble(touch) {
   const id = touch.identifier || 1;
   const crumble = crumbles.get(id);
-  crumble.touch = touch;
+  //crumble.touch = touch;
 
-  const frequency = yToFreq(touch.pageY / window.innerHeight);
+  const yPos = touch.pageY / window.innerHeight;
+  const xPos = touch.pageX / window.innerWidth;
+  const yChange = (touch.pageY - crumble.touch.pageY) / window.innerHeight;
+  const xChange = (touch.pageX - crumble.touch.pageX) / window.innerWidth;
+
+  const frequency = yToFreq(yPos);
   monosynth.adjust(crumble.synth, touch.force || 0, frequency);
 
-  const lowPass = xToFreq(touch.pageX / window.innerWidth);
+  const lowPass = xToFreq(xPos);
   exponentialAdjust(crumble.synth.lowPass.frequency, lowPass, audioContext.currentTime);
+
+  crumble.line.object.rotation.set(yChange * PI2, xChange * PI2, 0);
 }
 
 export function releaseCrumble(touch) {

@@ -47,7 +47,7 @@ export function init({camera, scene}) {
     event.preventDefault();
     if (mouseStart) {
       changeCrumble(event);
-      rotate(mouseStart, event);
+      //rotate(mouseStart, event);
     }
   }
 
@@ -81,7 +81,7 @@ export function init({camera, scene}) {
     event.preventDefault();
     const touch = event.changedTouches[0];
     changeCrumble(touch);
-    rotate(touches[touch.identifier], touch);
+    //rotate(touches[touch.identifier], touch);
     console.log('move', touch.force, touch.identifier);
   }
 
