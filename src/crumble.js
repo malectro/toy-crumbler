@@ -3,13 +3,15 @@ import {createLine, removeLine, pointsGeometryStatic} from 'src/points';
 import {delay, context as audioContext} from 'src/audio';
 import notes from 'src/audio/notes';
 import * as monosynth from 'src/audio/monosynth';
+import {exponentialAdjust} from 'src/audio/param';
 import {vec2, vec3} from 'src/vector';
 import {exp} from 'src/scale';
 
 
 const freqFloor = notes[2];
 const freqCeiling = notes[30];
-const xToFreq = exp(2, [freqFloor, freqCeiling]);
+const yToFreq = exp(2, [freqFloor, freqCeiling]);
+const xToFreq = exp(2, [notes[6], notes[87]]);
 
 const halfWidth = window.innerWidth / 2;
 const halfHeight = window.innerHeight / 2;
@@ -20,13 +22,16 @@ const crumbles = new Map();
 
 export function createCrumble(touch) {
   const id = touch.identifier || 1;
-  const frequency = xToFreq(touch.pageY / window.innerHeight);
+
+  const frequency = yToFreq(touch.pageY / window.innerHeight);
+  const lowPass = xToFreq(touch.pageX / window.innerWidth);
 
   const crumble = {
     touch,
     line: createLine(),
     synth: monosynth.create(audioContext, {
       frequency,
+      lowPass,
     }),
   };
   crumbles.set(id, crumble);
@@ -54,8 +59,11 @@ export function changeCrumble(touch) {
   const crumble = crumbles.get(id);
   crumble.touch = touch;
 
-  const frequency = xToFreq(touch.pageY / window.innerHeight);
+  const frequency = yToFreq(touch.pageY / window.innerHeight);
   monosynth.adjust(crumble.synth, touch.force || 0, frequency);
+
+  const lowPass = xToFreq(touch.pageX / window.innerWidth);
+  exponentialAdjust(crumble.synth.lowPass.frequency, lowPass, audioContext.currentTime);
 }
 
 export function releaseCrumble(touch) {

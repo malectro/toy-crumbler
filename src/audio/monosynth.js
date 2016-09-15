@@ -1,4 +1,5 @@
 import notes from 'src/audio/notes';
+import {exponentialAdjust} from 'src/audio/param';
 
 
 const attack = 0.01;
@@ -11,6 +12,7 @@ const loudRange = 1 - sustain;
 const defaultOptions = {
   destination: null,
   frequency: notes[8],
+  lowPass: notes[87],
 };
 
 export function create(context, options = defaultOptions) {
@@ -36,18 +38,18 @@ export function create(context, options = defaultOptions) {
   highPassMod.connect(highPass.frequency);
 
   const lowPass = context.createBiquadFilter();
-  lowPass.frequency.value = 0;
+  lowPass.frequency.value = options.lowPass;
   lowPass.type = 'lowpass';
-  lowPass.Q.value = 500;
+  lowPass.Q.value = 20;
   highPass.connect(lowPass);
 
   const lowPassMod = context.createGain();
   lowPassMod.gain.value = 100000;
-  lowPassMod.connect(lowPass.frequency);
+  //lowPassMod.connect(lowPass.frequency);
 
   // maybe shouldnt be a default option
   gain.connect(highPassMod);
-  gain.connect(lowPassMod);
+  //gain.connect(lowPassMod);
 
   if (options.destination) {
     lowPass.connect(options.destination);
@@ -100,14 +102,10 @@ export function adjust(synth, velocity, frequency = null) {
   const {gain, osc, context} = synth;
   const {currentTime} = context;
 
-  let time = currentTime + 0.01;
-
-  gain.gain.cancelScheduledValues(currentTime);
-  gain.gain.exponentialRampToValueAtTime(sustain + velocity * loudRange, time);
+  exponentialAdjust(gain.gain, sustain + velocity * loudRange, currentTime, 0.01);
 
   if (frequency !== null) {
-    osc.frequency.cancelScheduledValues(currentTime);
-    osc.frequency.linearRampToValueAtTime(frequency, time);
+    exponentialAdjust(osc.frequency, frequency, currentTime, 0.01);
   }
 }
 
