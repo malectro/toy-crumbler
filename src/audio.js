@@ -1,8 +1,5 @@
-import times from 'lodash/times';
 import {createDelay} from 'src/audio/delay';
-
-
-export const notes = times(88).map(note => Math.pow(2, (note - 49) / 12) * 440);
+import notes from 'src/audio/notes';
 
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;

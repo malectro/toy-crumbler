@@ -1,4 +1,4 @@
-import times from 'lodash/times'
+import notes from 'src/audio/notes';
 
 
 const attack = 0.01;
@@ -7,8 +7,6 @@ const sustain = 0.6;
 const release = 0.5;
 
 const loudRange = 1 - sustain;
-
-const notes = times(88).map(note => Math.pow(2, (note - 49) / 12) * 440);
 
 const defaultOptions = {
   destination: null,
@@ -98,12 +96,19 @@ export function down(synth, velocity, frequency = null) {
   return time;
 }
 
-export function adjust(synth, velocity) {
-  const {gain, context} = synth;
+export function adjust(synth, velocity, frequency = null) {
+  const {gain, osc, context} = synth;
   const {currentTime} = context;
 
+  let time = currentTime + 0.01;
+
   gain.gain.cancelScheduledValues(currentTime);
-  gain.gain.exponentialRampToValueAtTime(sustain + velocity * loudRange, currentTime + 0.01);
+  gain.gain.exponentialRampToValueAtTime(sustain + velocity * loudRange, time);
+
+  if (frequency !== null) {
+    osc.frequency.cancelScheduledValues(currentTime);
+    osc.frequency.linearRampToValueAtTime(frequency, time);
+  }
 }
 
 export function up(synth, startTime) {
