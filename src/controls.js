@@ -100,6 +100,7 @@ export function init({camera, scene}) {
   window.addEventListener('touchstart', handleTouchStart);
   window.addEventListener('touchmove', handleTouchMove);
   window.addEventListener('touchend', handleTouchEnd);
+  window.addEventListener('touchcancel', handleTouchEnd);
 
 
   function rotate(start, current) {
