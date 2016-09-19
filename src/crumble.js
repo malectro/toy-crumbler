@@ -17,7 +17,7 @@ const PI2 = Math.PI * 2;
 const halfWidth = window.innerWidth / 2;
 const halfHeight = window.innerHeight / 2;
 const worldHeight = Math.sin((camera.fov / 2) * Math.PI / 180) * 1000 * 2;
-const screenToWorld = worldHeight / innerHeight;
+const screenToWorld = 1.2 * worldHeight / window.innerHeight;
 
 const crumbles = new Map();
 
@@ -40,7 +40,7 @@ export function createCrumble(touch) {
   };
   crumbles.set(id, crumble);
 
-  crumble.line.object.position.set(screenToWorld * (touch.pageX - halfWidth), screenToWorld * (touch.pageY - halfHeight), 0);
+  crumble.line.object.position.set(screenToWorld * (halfWidth - touch.pageX), screenToWorld * (halfHeight - touch.pageY), 0);
   delay.receive(crumble.synth);
 
   return crumble;
