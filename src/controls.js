@@ -1,3 +1,4 @@
+import forEach from 'lodash/foreach';
 import {vec3} from 'src/vector';
 import {attackCrumble, changeCrumble, releaseCrumble} from 'src/crumble';
 
@@ -65,32 +66,36 @@ export function init({camera, scene}) {
   let touchCount = 0;
   function handleTouchStart(event) {
     event.preventDefault();
-    const touch = event.changedTouches[0];
-    touches[touch.identifier] = {
-      pageX: touch.pageX,
-      pageY: touch.pageY,
-    };
-    touchCount++;
-    console.log('start', touchCount);
-    console.log('hi', touch.force, touch.identifier);
 
-    attackCrumble(touch);
+    forEach(event.changedTouches, touch => {
+      touches[touch.identifier] = {
+        pageX: touch.pageX,
+        pageY: touch.pageY,
+      };
+      touchCount++;
+      console.log('start', touchCount);
+      console.log('hi', touch.force, touch.identifier);
+
+      attackCrumble(touch);
+    });
   }
 
   function handleTouchMove(event) {
     event.preventDefault();
-    const touch = event.changedTouches[0];
-    changeCrumble(touch);
-    //rotate(touches[touch.identifier], touch);
-    console.log('move', touch.force, touch.identifier);
+    forEach(event.changedTouches, touch => {
+      changeCrumble(touch);
+      //rotate(touches[touch.identifier], touch);
+      console.log('move', touch.force, touch.identifier);
+    });
   }
 
   function handleTouchEnd(event) {
     event.preventDefault();
-    const touch = event.changedTouches[0];
-    delete touches[touch.identifier];
-    touchCount--;
-    releaseCrumble(touch);
+    forEach(event.changedTouches, touch => {
+      delete touches[touch.identifier];
+      touchCount--;
+      releaseCrumble(touch);
+    });
   }
   window.addEventListener('touchstart', handleTouchStart);
   window.addEventListener('touchmove', handleTouchMove);
