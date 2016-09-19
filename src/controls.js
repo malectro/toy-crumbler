@@ -1,4 +1,4 @@
-import forEach from 'lodash/foreach';
+import forEach from 'lodash/forEach';
 import {vec3} from 'src/vector';
 import {attackCrumble, changeCrumble, releaseCrumble} from 'src/crumble';
 
