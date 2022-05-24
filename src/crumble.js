@@ -40,10 +40,18 @@ export function createCrumble(touch) {
   };
   crumbles.set(id, crumble);
 
-  crumble.line.object.position.set(screenToWorld * (halfWidth - touch.pageX), screenToWorld * (halfHeight - touch.pageY), 0);
+  positionCrumble(crumble, touch);
   delay.receive(crumble.synth);
 
   return crumble;
+}
+
+function positionCrumble(crumble, touch) {
+  crumble.touch = {
+    pageX: touch.pageX,
+    pageY: touch.pageY,
+  };
+  crumble.line.object.position.set(screenToWorld * (halfWidth - touch.pageX), screenToWorld * (halfHeight - touch.pageY), 0);
 }
 
 export function attackCrumble(touch) {
@@ -52,6 +60,8 @@ export function attackCrumble(touch) {
 
   if (!crumble) {
     crumble = createCrumble(touch);
+  } else {
+    positionCrumble(crumble, touch);
   }
 
   clearTimeout(crumble.releaseTimeout);

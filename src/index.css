@@ -1,5 +1,6 @@
 body {
-  background: blue;
+  background: black;
+  overflow: hidden;
 }
 
 canvas {
