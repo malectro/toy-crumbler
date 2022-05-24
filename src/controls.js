@@ -36,71 +36,34 @@ export function init({camera, scene}) {
     }
   });
 
-
-  let mouseStart;
-  function handleMouseDown(event) {
-    event.preventDefault();
-    mouseStart = event;
-    attackCrumble(event);
-  }
-
-  function handleMouseMove(event) {
-    event.preventDefault();
-    if (mouseStart) {
-      changeCrumble(event);
-      //rotate(mouseStart, event);
-    }
-  }
-
-  function handleMouseUp(event) {
-    event.preventDefault();
-    mouseStart = null;
-    releaseCrumble(event);
-  }
-  window.addEventListener('mousedown', handleMouseDown);
-  window.addEventListener('mousemove', handleMouseMove);
-  window.addEventListener('mouseup', handleMouseUp);
-
-
-  const touches = {};
-  let touchCount = 0;
+  const activePointers = new Set();
   function handleTouchStart(event) {
     event.preventDefault();
-
-    forEach(event.changedTouches, touch => {
-      touches[touch.identifier] = {
-        pageX: touch.pageX,
-        pageY: touch.pageY,
-      };
-      touchCount++;
-      console.log('start', touchCount);
-      console.log('hi', touch.force, touch.identifier);
-
-      attackCrumble(touch);
-    });
+    activePointers.add(event.pointerId);
+    attackCrumble(event);
   }
 
   function handleTouchMove(event) {
     event.preventDefault();
-    forEach(event.changedTouches, touch => {
-      changeCrumble(touch);
-      //rotate(touches[touch.identifier], touch);
-      console.log('move', touch.force, touch.identifier);
-    });
+    if (activePointers.has(event.pointerId)) {
+      changeCrumble(event);
+    }
   }
 
   function handleTouchEnd(event) {
     event.preventDefault();
-    forEach(event.changedTouches, touch => {
-      delete touches[touch.identifier];
-      touchCount--;
-      releaseCrumble(touch);
-    });
+    console.log('end', event.pointerId);
+    if (activePointers.has(event.pointerId)) {
+      activePointers.delete(event.pointerId);
+      releaseCrumble(event);
+    }
   }
-  window.addEventListener('touchstart', handleTouchStart);
-  window.addEventListener('touchmove', handleTouchMove);
-  window.addEventListener('touchend', handleTouchEnd);
-  window.addEventListener('touchcancel', handleTouchEnd);
+
+  window.addEventListener('pointerdown', handleTouchStart, {capture: true});
+  window.addEventListener('pointermove', handleTouchMove, {capture: true});
+  window.addEventListener('pointerup', handleTouchEnd, {capture: true});
+  window.addEventListener('pointerleave', handleTouchEnd, {capture: true});
+  window.addEventListener('pointercancel', handleTouchEnd, {capture: true});
 
 
   function rotate(start, current) {

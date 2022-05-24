@@ -22,7 +22,7 @@ const screenToWorld = 1.2 * worldHeight / window.innerHeight;
 const crumbles = new Map();
 
 export function createCrumble(touch) {
-  const id = touch.identifier || 1;
+  const id = touch.pointerId || 1;
 
   const frequency = yToFreq(touch.pageY / window.innerHeight);
   const lowPass = xToFreq(touch.pageX / window.innerWidth);
@@ -47,7 +47,7 @@ export function createCrumble(touch) {
 }
 
 export function attackCrumble(touch) {
-  const id = touch.identifier || 1;
+  const id = touch.pointerId || 1;
   let crumble = crumbles.get(id);
 
   if (!crumble) {
@@ -55,11 +55,11 @@ export function attackCrumble(touch) {
   }
 
   clearTimeout(crumble.releaseTimeout);
-  monosynth.down(crumble.synth, touch.force || 0);
+  monosynth.down(crumble.synth, touch.pressure || 0);
 }
 
 export function changeCrumble(touch) {
-  const id = touch.identifier || 1;
+  const id = touch.pointerId || 1;
   const crumble = crumbles.get(id);
   //crumble.touch = touch;
 
@@ -69,7 +69,7 @@ export function changeCrumble(touch) {
   const xChange = (touch.pageX - crumble.touch.pageX) / window.innerWidth;
 
   const frequency = yToFreq(yPos);
-  monosynth.adjust(crumble.synth, touch.force || 0, frequency);
+  monosynth.adjust(crumble.synth, touch.pressure || 0, frequency);
 
   const lowPass = xToFreq(xPos);
   exponentialAdjust(crumble.synth.lowPass.frequency, lowPass, audioContext.currentTime);
@@ -78,7 +78,7 @@ export function changeCrumble(touch) {
 }
 
 export function releaseCrumble(touch) {
-  const id = touch.identifier || 1;
+  const id = touch.pointerId || 1;
   const crumble = crumbles.get(id);
   const endTime = monosynth.up(crumble.synth);
 
@@ -89,7 +89,7 @@ export function releaseCrumble(touch) {
 }
 
 export function removeCrumble(touch) {
-  const id = touch.identifier || 1;
+  const id = touch.pointerId || 1;
   const crumble = crumbles.get(id);
   removeLine(crumble.line);
   monosynth.destroy(crumble.synth);
