@@ -5,7 +5,7 @@ import {topScene, camera, renderer, onUpdate} from 'src/renderer';
 import {pointScene} from 'src/points';
 import * as controls from 'src/controls';
 import {vec2, vec3} from 'src/vector';
-import {play, oscGain, lowPass, lowPassMod} from 'src/audio';
+import {context as audioContext} from 'src/audio';
 
 
 const fogColor = 0x000000;
@@ -23,22 +23,40 @@ topScene.add(light2);
 
 pointScene.position.setZ(1000);
 
-controls.init({camera, scene: pointScene});
-
-
-/*
-window.addEventListener('click', () => {
-  play();
-});
-*/
-
 window.camera = camera;
 window.scene = pointScene;
 
+const presenter = document.createElement('div');
+presenter.textContent = 'Tap the screen to enable audio.';
+presenter.addEventListener('click', (event) => {
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  audioContext.resume().then(() => {
+    presenter.remove();
+    disableSafariBullshit();
+    controls.init({camera, scene: pointScene});
+  });
+}, { capture: true });
+presenter.style = `
+display: flex;
+box-sizing: border-box;
+align-items: center;
+justify-content: center;
+text-align: center;
+padding: 1rem;
+position: fixed;
+inset: 0;
+background: black;
+color: white;
+`;
+document.body.appendChild(presenter);
+
+function disableSafariBullshit() {
 for (const name of [
   'touchstart', 'touchmove', 'touchend', 'touchforcechange',
 ]) {
   window.addEventListener(name, (event) => {
     event.preventDefault();
   });
+}
 }
