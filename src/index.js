@@ -47,14 +47,19 @@ window.camera = camera;
 const presenter = document.createElement('div');
 presenter.textContent = 'Tap the screen to enable audio.';
 presenter.addEventListener('click', (event) => {
+  event.preventDefault();
+  event.stopImmediatePropagation();
   audioContext.resume().then(() => {
     presenter.remove();
   });
-});
+}, { capture: true });
 presenter.style = `
 display: flex;
+box-sizing: border-box;
 align-items: center;
 justify-content: center;
+text-align: center;
+padding: 1rem;
 position: fixed;
 inset: 0;
 background: black;

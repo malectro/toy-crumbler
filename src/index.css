@@ -1,6 +1,10 @@
 body {
   background: black;
   overflow: hidden;
+  -webkit-user-select: none;
+  touch-action: none;
+  font-family: system-ui, ui-sans-serif, sans-serif;
+  font-size: 2rem;
 }
 
 canvas {
