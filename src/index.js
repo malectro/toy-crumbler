@@ -3,6 +3,7 @@ import {Scene, BoxGeometry, AmbientLight, DirectionalLight, Mesh, MeshStandardMa
 import {vec2, vec3} from 'src/vector';
 
 import {topScene, camera, renderer, onUpdate} from 'src/renderer';
+import { context as audioContext } from './audio';
 import * as controls from 'src/controls';
 import {lfo} from 'src/crumble';
 
@@ -41,3 +42,22 @@ onUpdate((time, delta) => {
 window.box = boxMesh;
 window.camera = camera;
 //window.scene = pointScene;
+
+
+const presenter = document.createElement('div');
+presenter.textContent = 'Tap the screen to enable audio.';
+presenter.addEventListener('click', (event) => {
+  audioContext.resume().then(() => {
+    presenter.remove();
+  });
+});
+presenter.style = `
+display: flex;
+align-items: center;
+justify-content: center;
+position: fixed;
+inset: 0;
+background: black;
+color: white;
+`;
+document.body.appendChild(presenter);

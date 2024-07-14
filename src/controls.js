@@ -95,4 +95,11 @@ export function init({camera, scene}) {
     scene.rotation.y = (current.pageX - start.pageX) * 0.01;
     scene.rotation.x = (current.pageY - start.pageY) * 0.01;
   }
+
+    if (audioContext.state !== "suspended") return;
+    const b = document.body;
+    const events = ["touchstart", "touchend", "mousedown", "keydown"];
+    events.forEach(e => b.addEventListener(e, unlock, false));
+    function unlock() {audioContext.resume().then(clean);}
+    function clean() {events.forEach(e => b.removeEventListener(e, unlock));}
 }
