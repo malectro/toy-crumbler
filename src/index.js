@@ -51,6 +51,7 @@ presenter.addEventListener('click', (event) => {
   event.stopImmediatePropagation();
   audioContext.resume().then(() => {
     presenter.remove();
+    disableSafariBullshit();
   });
 }, { capture: true });
 presenter.style = `
@@ -66,3 +67,13 @@ background: black;
 color: white;
 `;
 document.body.appendChild(presenter);
+
+function disableSafariBullshit() {
+for (const name of [
+  'touchstart', 'touchmove', 'touchend', 'touchforcechange',
+]) {
+  window.addEventListener(name, (event) => {
+    event.preventDefault();
+  });
+}
+}
