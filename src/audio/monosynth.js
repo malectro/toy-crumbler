@@ -28,7 +28,6 @@ export function create(context, options) {
   const osc = context.createOscillator();
   osc.type = options.type;
   osc.frequency.value = options.frequency;
-  osc.start(currentTime);
 
   const gain = context.createGain();
   gain.gain.value = 0;

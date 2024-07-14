@@ -4,7 +4,6 @@ import {vec2, vec3} from 'src/vector';
 
 import {topScene, camera, renderer, onUpdate} from 'src/renderer';
 import * as controls from 'src/controls';
-import {play, oscGain, lowPass, lowPassMod} from 'src/audio';
 import {lfo} from 'src/crumble';
 
 
@@ -38,13 +37,6 @@ controls.init({camera, scene: boxScene});
 onUpdate((time, delta) => {
   boxScene.rotation.y += lfo.frequency.value * Math.PI * 2 * delta * 0.001;
 });
-
-
-/*
-window.addEventListener('click', () => {
-  play();
-});
-*/
 
 window.box = boxMesh;
 window.camera = camera;

@@ -50,7 +50,14 @@ let lastX = 0;
 window.speed = 0;
 const decay = 0.9;
 
-const synth = monosynth.create(audioContext, {
+export const lfo = audioContext.createOscillator();
+lfo.type = 'sine';
+lfo.frequency.value = 0.1;
+
+let synth;
+
+function start() {
+synth = monosynth.create(audioContext, {
   type: 'square',
   release: 5,
   lowPass: notes[50],
@@ -58,16 +65,24 @@ const synth = monosynth.create(audioContext, {
 delay.receive(synth);
 synth.gain.gain.value = 0.1;
 
-export const lfo = audioContext.createOscillator();
-lfo.type = 'sine';
-lfo.frequency.value = 0.1;
-lfo.start(audioContext.currentTime);
 lfo.connect(synth.lowPassMod);
+
+  audioContext.resume();
+  console.log('starting');
+synth.osc.start(audioContext.currentTime);
+lfo.start(audioContext.currentTime);
 
 window.lfo = lfo;
 window.audio = audioContext;
+}
 
+
+let started = false;
 export function attackSpeed(touch) {
+  if (!started) {
+    started = true;
+    start();
+  }
   lastX = touch.pageX;
   monosynth.down(synth, 1);
 }
@@ -75,6 +90,7 @@ export function changeSpeed(touch) {
   speed = (lastX - touch.pageX) * 0.1;
   lfo.frequency.cancelScheduledValues(audioContext.currentTime);
   lfo.frequency.linearRampToValueAtTime(speed, audioContext.currentTime + 0.01);
+  console.log('ramping', lfo.frequency.value, speed, audioContext.currentTime);
   lastX = touch.pageX;
 }
 
@@ -92,8 +108,10 @@ onUpdate((time, delta) => {
     if (Math.abs(speed) < 0.00001) {
       speed = 0;
     }
+    /*
     lfo.frequency.cancelScheduledValues(audioContext.currentTime);
     lfo.frequency.linearRampToValueAtTime(speed, audioContext.currentTime + delta * 0.001);
+    */
   }
 });
 

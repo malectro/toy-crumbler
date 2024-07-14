@@ -24,6 +24,9 @@ export function initMobileAudio() {
   }
 
   mobile = true;
+
+  console.log('resuming');
+  context.resume();
   const osc = context.createOscillator();
 
   const gain = context.createGain();
