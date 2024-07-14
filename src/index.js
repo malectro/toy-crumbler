@@ -35,3 +35,10 @@ window.addEventListener('click', () => {
 window.camera = camera;
 window.scene = pointScene;
 
+for (const name of [
+  'touchstart', 'touchmove', 'touchend', 'touchforcechange',
+]) {
+  window.addEventListener(name, (event) => {
+    event.preventDefault();
+  });
+}
