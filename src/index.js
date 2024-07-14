@@ -27,7 +27,7 @@ window.camera = camera;
 window.scene = pointScene;
 
 const presenter = document.createElement('div');
-presenter.textContent = 'Tap the screen to enable audio.';
+presenter.textContent = 'Tap the screen to enable audio.\n\nThen tap again to play.';
 presenter.addEventListener('click', (event) => {
   event.preventDefault();
   event.stopImmediatePropagation();
