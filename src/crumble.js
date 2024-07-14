@@ -40,19 +40,62 @@ export function createCrumble(touch) {
   };
   crumbles.set(id, crumble);
 
-  positionCrumble(crumble, touch);
+  crumble.line.object.position.set(screenToWorld * (halfWidth - touch.pageX), screenToWorld * (halfHeight - touch.pageY), 0);
   delay.receive(crumble.synth);
 
   return crumble;
 }
 
-function positionCrumble(crumble, touch) {
-  crumble.touch = {
-    pageX: touch.pageX,
-    pageY: touch.pageY,
-  };
-  crumble.line.object.position.set(screenToWorld * (halfWidth - touch.pageX), screenToWorld * (halfHeight - touch.pageY), 0);
+let lastX = 0;
+window.speed = 0;
+const decay = 0.9;
+
+const synth = monosynth.create(audioContext, {
+  type: 'square',
+  release: 5,
+  lowPass: notes[50],
+});
+delay.receive(synth);
+synth.gain.gain.value = 0.1;
+
+export const lfo = audioContext.createOscillator();
+lfo.type = 'sine';
+lfo.frequency.value = 0.1;
+lfo.start(audioContext.currentTime);
+lfo.connect(synth.lowPassMod);
+
+window.lfo = lfo;
+window.audio = audioContext;
+
+export function attackSpeed(touch) {
+  lastX = touch.pageX;
+  monosynth.down(synth, 1);
 }
+export function changeSpeed(touch) {
+  speed = (lastX - touch.pageX) * 0.1;
+  lfo.frequency.cancelScheduledValues(audioContext.currentTime);
+  lfo.frequency.linearRampToValueAtTime(speed, audioContext.currentTime + 0.01);
+  lastX = touch.pageX;
+}
+
+export function releaseSpeed(touch) {
+  //monosynth.up(synth);
+  synth.gain.gain.cancelScheduledValues(audioContext.currentTime);
+  synth.gain.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 5);
+  lfo.frequency.setTargetAtTime(0.1, audioContext.currentTime + 0.02, 0.9);
+}
+
+onUpdate((time, delta) => {
+  return;
+  if (speed !== 0) {
+    speed *= decay;
+    if (Math.abs(speed) < 0.00001) {
+      speed = 0;
+    }
+    lfo.frequency.cancelScheduledValues(audioContext.currentTime);
+    lfo.frequency.linearRampToValueAtTime(speed, audioContext.currentTime + delta * 0.001);
+  }
+});
 
 export function attackCrumble(touch) {
   const id = touch.pointerId || 1;
@@ -60,12 +103,10 @@ export function attackCrumble(touch) {
 
   if (!crumble) {
     crumble = createCrumble(touch);
-  } else {
-    positionCrumble(crumble, touch);
   }
 
   clearTimeout(crumble.releaseTimeout);
-  monosynth.down(crumble.synth, touch.pressure || 0);
+  monosynth.down(crumble.synth, touch.force || 0);
 }
 
 export function changeCrumble(touch) {
@@ -79,7 +120,7 @@ export function changeCrumble(touch) {
   const xChange = (touch.pageX - crumble.touch.pageX) / window.innerWidth;
 
   const frequency = yToFreq(yPos);
-  monosynth.adjust(crumble.synth, touch.pressure || 0, frequency);
+  monosynth.adjust(crumble.synth, touch.force || 0, frequency);
 
   const lowPass = xToFreq(xPos);
   exponentialAdjust(crumble.synth.lowPass.frequency, lowPass, audioContext.currentTime);
@@ -113,6 +154,7 @@ const minRumble = 0.001;
 
 const zeroVertex = vec3(0, 0, 0);
 
+/*j
 onUpdate(time => {
   const staticVertices = pointsGeometryStatic.vertices;
 
@@ -136,3 +178,4 @@ onUpdate(time => {
     }
   }
 });
+*/

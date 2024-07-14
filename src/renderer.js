@@ -1,5 +1,5 @@
 import noop from 'lodash/noop';
-import {Scene, PerspectiveCamera, WebGLRenderer} from 'three';
+import {Scene, OrthographicCamera, PerspectiveCamera, WebGLRenderer} from 'three';
 import {vec2, vec3} from 'src/vector';
 
 
@@ -7,7 +7,11 @@ const viewDistance = 1000;
 
 
 export const topScene = new Scene();
-export const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, viewDistance);
+//export const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, viewDistance);
+//const {innerWidth: width, innerHeight: height} = window;
+const width = 4;
+const height = width * window.innerHeight / window.innerWidth;
+export const camera = new OrthographicCamera(-width / 2, width / 2, -height / 2, height / 2, 0.1, viewDistance);
 export const renderer = new WebGLRenderer({
   antialias: true,
 });
@@ -17,14 +21,18 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 
 document.body.appendChild(renderer.domElement);
 
-let update = noop;
+let handlers = [];
 export function onUpdate(handler) {
-  update = handler;
+  handlers.push(handler);
 }
+let lastTime = 0;
 function render(time) {
   requestAnimationFrame(render);
-  update(time);
+  for (let i = 0; i < handlers.length; i++) {
+    handlers[i](time, time - lastTime);
+  }
   renderer.render(topScene, camera);
+  lastTime = time;
 }
 requestAnimationFrame(render);
 
@@ -39,4 +47,3 @@ function handleResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 window.addEventListener('resize', handleResize);
-

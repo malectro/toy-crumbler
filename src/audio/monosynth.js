@@ -10,20 +10,28 @@ const release = 0.5;
 const loudRange = 1 - sustain;
 
 const defaultOptions = {
+  type: 'sawtooth',
   destination: null,
   frequency: notes[8],
   lowPass: notes[87],
+  attack: 0.01,
+  decay: 0.1,
+  sustain: 0.6,
+  release: 0.5,
 };
 
-export function create(context, options = defaultOptions) {
+export function create(context, options) {
   const {currentTime} = context;
 
+  options = Object.assign({}, defaultOptions, options);
+
   const osc = context.createOscillator();
-  osc.type = 'sawtooth';
+  osc.type = options.type;
   osc.frequency.value = options.frequency;
   osc.start(currentTime);
 
   const gain = context.createGain();
+  gain.gain.value = 0;
   osc.connect(gain);
 
   const highPass = context.createBiquadFilter();
@@ -44,11 +52,13 @@ export function create(context, options = defaultOptions) {
   highPass.connect(lowPass);
 
   const lowPassMod = context.createGain();
-  lowPassMod.gain.value = 100000;
-  //lowPassMod.connect(lowPass.frequency);
+  lowPassMod.gain.value = 100;
+  lowPassMod.connect(lowPass.frequency);
+
+  window.lowPassMod = lowPassMod;
 
   // maybe shouldnt be a default option
-  gain.connect(highPassMod);
+  //gain.connect(highPassMod);
   //gain.connect(lowPassMod);
 
   if (options.destination) {
@@ -63,6 +73,13 @@ export function create(context, options = defaultOptions) {
     lowPass,
     highPassMod,
     lowPassMod,
+
+    env: {
+      attack: options.attack,
+      decay: options.decay,
+      sustain: options.sustain,
+      release: options.release,
+    },
 
     connect(...args) {
       lowPass.connect(...args);
@@ -110,7 +127,7 @@ export function adjust(synth, velocity, frequency = null) {
 }
 
 export function up(synth, startTime) {
-  const {gain, context} = synth;
+  const {gain, context, env: {release}} = synth;
   const {currentTime} = context;
 
   let time = startTime || currentTime;
@@ -124,4 +141,3 @@ export function up(synth, startTime) {
 
   return time;
 }
-
