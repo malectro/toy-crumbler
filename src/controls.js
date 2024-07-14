@@ -1,6 +1,6 @@
 import forEach from 'lodash/forEach';
 import {vec3} from 'src/vector';
-import {initMobileAudio} from 'src/audio';
+import {initMobileAudio, context as audioContext} from 'src/audio';
 import {attackSpeed, changeSpeed, releaseSpeed, attackCrumble, changeCrumble, releaseCrumble} from 'src/crumble';
 
 
@@ -37,29 +37,48 @@ export function init({camera, scene}) {
   window.addEventListener('mouseup', handleMouseUp);
   */
 
-  const activePointers = new Set();
-  function handleTouchStart(event) {
-    event.preventDefault();
+  function touchStart(event) {
     console.log('touch start');
 
-    initMobileAudio();
+    //initMobileAudio();
 
     activePointers.add(event.pointerId);
     attackSpeed(event);
   }
 
-  function handleTouchMove(event) {
+  const activePointers = new Set();
+  let working = false;
+  function handleTouchStart(event) {
     event.preventDefault();
+    console.log('yo');
+
+    if (!working) {
+      working = true;
+    audioContext.resume().then(() => {
+        console.log('resumed');
+      working = true;
+      touchStart(event);
+    }, (error) => {
+      console.error(error);
+    });
+
+      return;
+    }
+
+    touchStart(event);
+  }
+
+  function handleTouchMove(event) {
     if (activePointers.has(event.pointerId)) {
+      event.preventDefault();
       console.log('touch move');
       changeSpeed(event);
     }
   }
 
   function handleTouchEnd(event) {
-    event.preventDefault();
-
     if (activePointers.has(event.pointerId)) {
+      event.preventDefault();
       activePointers.delete(event.pointerId);
       releaseSpeed(event);
     }

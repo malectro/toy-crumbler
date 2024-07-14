@@ -67,7 +67,7 @@ synth.gain.gain.value = 0.1;
 
 lfo.connect(synth.lowPassMod);
 
-  audioContext.resume();
+  //audioContext.resume();
   console.log('starting');
 synth.osc.start(audioContext.currentTime);
 lfo.start(audioContext.currentTime);
